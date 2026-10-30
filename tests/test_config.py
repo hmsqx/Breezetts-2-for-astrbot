@@ -53,7 +53,9 @@ class ConfigurationTests(unittest.TestCase):
         self.plugin_dir = self.root / "plugins/astrbot_plugin_breeze_tts"
         (self.plugin_dir / "data").mkdir(parents=True)
         self.schema = json.loads(
-            Path(__file__).with_name("_conf_schema.json").read_text(encoding="utf-8")
+            (Path(__file__).resolve().parents[1] / "_conf_schema.json").read_text(
+                encoding="utf-8"
+            )
         )
         (self.plugin_dir / "_conf_schema.json").write_text(
             json.dumps(self.schema), encoding="utf-8"
@@ -67,9 +69,7 @@ class ConfigurationTests(unittest.TestCase):
         self.stack.enter_context(
             patch.object(settings, "get_astrbot_data_path", lambda: str(self.root))
         )
-        self.stack.enter_context(
-            patch.object(settings, "__file__", str(self.plugin_dir / "settings.py"))
-        )
+        self.stack.enter_context(patch.object(settings, "PLUGIN_ROOT", self.plugin_dir))
         self.stack.enter_context(
             patch.object(tts, "get_astrbot_temp_path", lambda: str(self.root))
         )

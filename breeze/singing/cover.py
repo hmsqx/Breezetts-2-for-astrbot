@@ -15,9 +15,9 @@ from astrbot.core.message.components import File, Plain
 from astrbot.core.message.message_event_result import MessageChain
 from astrbot.core.utils.astrbot_path import get_astrbot_temp_path
 
-from . import settings, tts_provider
+from .. import settings, tts_provider
+from ..tts_provider import MAX_COVER_BYTES, MAX_REFERENCE_BYTES
 from .backend_client import _backend_error_detail
-from .tts_provider import MAX_COVER_BYTES, MAX_REFERENCE_BYTES
 from .voice_delivery import VoiceDeliveryMixin, VoiceSegmentationError
 
 

@@ -16,13 +16,13 @@ import httpx
 from test_support import load_module, load_plugin
 
 MAIN = load_plugin()
-COVER = load_module("cover")
-LIBRARY = load_module("library")
+COVER = load_module("singing.cover")
+LIBRARY = load_module("singing.library")
 SETTINGS = load_module("settings")
 TASK_STATE = load_module("task_state")
 TTS = load_module("tts_provider")
-VOICE = load_module("voice_delivery")
-BACKEND = load_module("backend_client")
+VOICE = load_module("singing.voice_delivery")
+BACKEND = load_module("singing.backend_client")
 
 from astrbot.core.message.components import File, Plain, Record  # noqa: E402
 from astrbot.core.message.message_event_result import MessageChain  # noqa: E402
@@ -57,9 +57,7 @@ class FakeContext:
 
 class SingingTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        temporary = tempfile.TemporaryDirectory(
-            prefix="singing-", dir=Path(__file__).resolve().parent.parent / "tmp"
-        )
+        temporary = tempfile.TemporaryDirectory(prefix="singing-")
         self.addCleanup(temporary.cleanup)
         self.root = Path(temporary.name)
         self.ref = self.root / "reference.wav"

@@ -15,7 +15,8 @@ from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
 spec = importlib.util.spec_from_file_location(
-    "tested_installer", Path(__file__).with_name("installer.py")
+    "tested_installer",
+    Path(__file__).resolve().parents[1] / "breeze/services/installer.py",
 )
 installer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(installer)
@@ -30,9 +31,7 @@ class Reply(io.BytesIO):
 
 class InstallerTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(
-            dir=Path(__file__).parent.parent / "tmp"
-        )
+        self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.addCleanup(self.temp.cleanup)
         self.report = patch.object(installer, "report").start()

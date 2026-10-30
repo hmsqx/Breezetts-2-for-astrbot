@@ -3,7 +3,7 @@ const path = require("node:path");
 const assert = require("node:assert/strict");
 
 async function main() {
-  const html = fs.readFileSync(path.join(__dirname, "views", "service", "index.html"), "utf8");
+  const html = fs.readFileSync(path.join(__dirname, "..", "views", "service", "index.html"), "utf8");
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
   function node(tagName = "") { return {
     textContent: "", value: "", checked: false, indeterminate: false, hidden: true,
@@ -96,7 +96,7 @@ async function main() {
   global.document = { getElementById: id => nodes[id], createElement: tag => node(tag), createDocumentFragment: () => node("fragment") };
   global.setTimeout = (callback, delay) => { timers.push(callback); timerDelays.push(delay); return timers.length; };
   global.clearTimeout = timer => { clearedTimers.push(timer); };
-  const source = fs.readFileSync(path.join(__dirname, "views", "service", "app.js"), "utf8");
+  const source = fs.readFileSync(path.join(__dirname, "..", "views", "service", "app.js"), "utf8");
   await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
   assert.equal(nodes["config-instruction"].value, config.instruction);
   assert.equal(nodes["config-singing-enabled"].checked, true);

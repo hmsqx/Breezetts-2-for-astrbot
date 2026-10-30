@@ -9,6 +9,8 @@ from urllib.parse import urlsplit
 from astrbot.api import AstrBotConfig
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
+PLUGIN_ROOT = Path(__file__).resolve().parents[1]
+
 MAX_CONFIG_BODY_BYTES = 64 * 1024
 
 CONFIG_KEYS = (
@@ -57,7 +59,7 @@ def _load_plugin_config() -> dict:
         / "astrbot_plugin_breeze_tts_config.json"
     )
     if not path.exists():
-        path = Path(__file__).parent / "data" / "cmd_config.json"
+        path = PLUGIN_ROOT / "data" / "cmd_config.json"
     if not path.exists():
         return {}
     with path.open(encoding="utf-8-sig") as stream:
@@ -79,9 +81,7 @@ def _save_plugin_config(cfg: dict, config: AstrBotConfig | None = None) -> None:
     """
     if config is None:
         schema = json.loads(
-            Path(__file__)
-            .with_name("_conf_schema.json")
-            .read_text(encoding="utf-8-sig")
+            (PLUGIN_ROOT / "_conf_schema.json").read_text(encoding="utf-8-sig")
         )
         path = (
             Path(get_astrbot_data_path())
@@ -101,7 +101,7 @@ def _save_plugin_config(cfg: dict, config: AstrBotConfig | None = None) -> None:
 def _plugin_config_defaults() -> dict:
     """Use the plugin schema as the single source of dashboard defaults."""
     schema = json.loads(
-        Path(__file__).with_name("_conf_schema.json").read_text(encoding="utf-8-sig")
+        (PLUGIN_ROOT / "_conf_schema.json").read_text(encoding="utf-8-sig")
     )
     defaults = {key: schema[key]["default"] for key in CONFIG_KEYS if key != "singing"}
     defaults["singing"] = {

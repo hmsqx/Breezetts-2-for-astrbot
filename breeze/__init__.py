@@ -1,0 +1,1 @@
+"""Breeze plugin implementation."""

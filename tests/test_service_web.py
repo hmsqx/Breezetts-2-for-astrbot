@@ -12,7 +12,7 @@ def main():
     module = load_plugin()
     settings = load_module("settings")
     dashboard = load_module("dashboard")
-    library = load_module("library")
+    library = load_module("singing.library")
     task_state = load_module("task_state")
     tts_provider = load_module("tts_provider")
 

@@ -16,8 +16,8 @@ from astrbot.core.message.message_event_result import MessageChain
 from astrbot.core.utils.astrbot_path import get_astrbot_temp_path
 from astrbot.core.workspace import API_KEY_USERNAME_PREFIX
 
+from ..settings import MAX_CONFIG_BODY_BYTES
 from .backend_client import _backend_error_detail
-from .settings import MAX_CONFIG_BODY_BYTES
 
 # The dashboard's native multipart limit is 128 MiB; leave room for framing.
 MAX_SONG_UPLOAD_BYTES = 120 * 1024 * 1024

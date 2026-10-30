@@ -13,13 +13,13 @@ from astrbot.core.computer.windows_job import WindowsProcessJob
 from astrbot.core.message.components import Record
 from astrbot.core.message.message_event_result import MessageChain, ResultContentType
 
-from . import settings
-from . import tts_provider as speech_provider
-from .cover import CoverMixin
-from .dashboard import DashboardMixin
-from .library import SongLibraryMixin
-from .task_state import SongTaskMixin
-from .tts_provider import ProviderBreezeTTS as ProviderBreezeTTS
+from .breeze import settings
+from .breeze import tts_provider as speech_provider
+from .breeze.dashboard import DashboardMixin
+from .breeze.singing.cover import CoverMixin
+from .breeze.singing.library import SongLibraryMixin
+from .breeze.task_state import SongTaskMixin
+from .breeze.tts_provider import ProviderBreezeTTS as ProviderBreezeTTS
 
 speech_provider._register_provider()
 
@@ -46,13 +46,13 @@ WEB_ROUTES = (
 )
 
 
-@register("breeze_tts", "Echok", "Breeze TTS 语音回复与歌曲翻唱", "1.9.0")
+@register("breeze_tts", "Echok", "Breeze TTS 语音回复与歌曲翻唱", "1.9.1")
 class BreezeTTSPlugin(
     DashboardMixin, SongLibraryMixin, CoverMixin, SongTaskMixin, Star
 ):
     def __init__(self, context: Context, config: AstrBotConfig | None = None):
-        from .installer import ServiceInstaller
-        from .service_control import BreezeService, CoverService
+        from .breeze.services.installer import ServiceInstaller
+        from .breeze.services.service_control import BreezeService, CoverService
 
         super().__init__(context)
         self.config = config

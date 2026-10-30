@@ -4,8 +4,10 @@ import unittest
 from unittest.mock import AsyncMock, patch
 from urllib.parse import parse_qs
 
-import chorus_planner as planner
 import httpx
+from test_support import load_module
+
+planner = load_module("singing.chorus_planner")
 
 SONG = {"id": "123", "name": "Sample Song", "duration": 120}
 LYRICS = "[ar:Artist]\n[offset:+500]\n[00:01.00]作词：Creator\n[00:10.00]first\n[00:20.00][00:40.00]repeat\n[00:30.00]last\n[00:50.00]next"

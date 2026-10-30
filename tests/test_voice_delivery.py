@@ -10,7 +10,7 @@ from pathlib import Path
 
 from test_support import load_module
 
-delivery = load_module("voice_delivery")
+delivery = load_module("singing.voice_delivery")
 
 
 def write_stereo_source(path, seconds):

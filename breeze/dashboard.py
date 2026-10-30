@@ -60,7 +60,7 @@ class DashboardMixin:
             return error_response(
                 "安装或歌曲任务正在进行，请完成后再安装。", status_code=409
             )
-        from .service_control import validate_api_base
+        from .services.service_control import validate_api_base
 
         try:
             cfg = plugin_settings._load_plugin_config()
@@ -78,7 +78,7 @@ class DashboardMixin:
         blockers = self._installer.snapshot(kind).get("blockers", [])
         if blockers:
             return error_response("；".join(blockers), status_code=400)
-        from .installer import normalize_sources
+        from .services.installer import normalize_sources
 
         try:
             body = await request.body()

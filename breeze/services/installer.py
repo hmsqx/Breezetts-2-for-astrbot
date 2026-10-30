@@ -27,7 +27,7 @@ DEFAULT_HF = HF
 MODEL_SOURCE = "auto"
 SEED_REVISION = "51383efd921027683c89e5348211d93ff12ac2a8"
 SEED_ARCHIVE_SHA = "72a27a1d20efec1489041eac2854e3e1c9c23d650ac15900821ad3ab367f0290"
-BUNDLED = Path(__file__).resolve().parent / "runtime"
+BUNDLED = Path(__file__).resolve().parents[2] / "runtime"
 SOURCE_CHOICES = {
     "python": {"auto", "tuna", "aliyun", "official"},
     "cuda": {"auto", "aliyun", "sjtu", "official"},

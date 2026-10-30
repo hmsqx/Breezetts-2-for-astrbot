@@ -1,5 +1,6 @@
 """Refresh the small backend source payload shipped with this local plugin."""
 
+import argparse
 import hashlib
 import json
 import shutil
@@ -7,12 +8,20 @@ import sys
 import zipfile
 from pathlib import Path
 
-from installer import SEED_ARCHIVE_SHA, SEED_REVISION
+PLUGIN = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PLUGIN))
+
+from breeze.services.installer import SEED_ARCHIVE_SHA, SEED_REVISION  # noqa: E402
 
 if __name__ == "__main__":
-    plugin = Path(__file__).resolve().parent
-    cover = plugin.parent
-    tts = cover.parent / "breeze-tts"
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("seed_archive", type=Path, nargs="?")
+    parser.add_argument("--cover-source", type=Path, default=PLUGIN / "runtime/cover")
+    parser.add_argument("--tts-source", type=Path, default=PLUGIN / "runtime/tts")
+    args = parser.parse_args()
+    plugin = PLUGIN
+    cover = args.cover_source.resolve()
+    tts = args.tts_source.resolve()
     sources = [
         (path, "tts", path.relative_to(tts))
         for folder in ("breeze_infer", "models")
@@ -39,9 +48,10 @@ if __name__ == "__main__":
         target = plugin / "runtime" / kind / relative
         assert target.resolve().is_relative_to((plugin / "runtime").resolve())
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
-    if len(sys.argv) > 1:
-        upstream = Path(sys.argv[1]).resolve()
+        if source.resolve() != target.resolve():
+            shutil.copyfile(source, target)
+    if args.seed_archive is not None:
+        upstream = args.seed_archive.resolve()
         assert hashlib.sha256(upstream.read_bytes()).hexdigest() == SEED_ARCHIVE_SHA
         target = plugin / "runtime/seed-vc.zip"
         with (
