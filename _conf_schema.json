@@ -1,0 +1,86 @@
+{
+  "instruction": {
+    "description": "音色描述",
+    "type": "text",
+    "default": "一位二十出头的年轻女性，声音柔和偏低，不尖不亮。语速较慢，句子之间有自然的停顿，吐字清楚。平时说话温和，语气轻缓，带一点慵懒。",
+    "hint": "用于音色设计，也可在克隆时作为语气、语速等引导；留空则不发送描述。"
+  },
+  "cfg_scale": {
+    "description": "CFG 强度",
+    "type": "float",
+    "default": 4.0,
+    "hint": "音色设计或开启克隆语音引导且有描述时生效；纯克隆或无描述时自动使用 1.0。值越高越遵循描述，但可能不自然。",
+    "slider": {
+      "min": 1.0,
+      "max": 10.0,
+      "step": 0.1
+    }
+  },
+  "seed": {
+    "description": "随机种子",
+    "type": "int",
+    "default": 42,
+    "hint": "相同种子和参数可减少合成结果的随机波动，音色仍可能变化。"
+  },
+  "ref_audio_path": {
+    "description": "参考音频路径",
+    "type": "string",
+    "default": "",
+    "hint": "填写 AstrBot 所在机器可读取的参考音频绝对路径，例如 D:/Echok/sample.wav。此处不上传文件；留空表示不用克隆，并请清空参考文本。"
+  },
+  "ref_text": {
+    "description": "参考音频对应的文本",
+    "type": "text",
+    "default": "",
+    "hint": "使用音色克隆时必填，请填写参考音频中实际说出的原文；不用克隆时请留空。"
+  },
+  "clone_use_instruction": {
+    "description": "克隆时使用语音引导",
+    "type": "bool",
+    "default": false,
+    "hint": "关闭时进行纯克隆；开启后，将非空音色描述用于引导语气、语速等，并使用设置的 CFG 强度。"
+  },
+  "api_base": {
+    "description": "Breeze TTS 服务地址",
+    "type": "string",
+    "default": "http://127.0.0.1:7860",
+    "hint": "Breeze TTS API 服务地址；默认 http://127.0.0.1:7860。"
+  },
+  "timeout": {
+    "description": "请求操作超时（秒）",
+    "type": "int",
+    "default": 120,
+    "hint": "连接、读取等单项操作的超时秒数，默认 120；并非整次合成的总时限。"
+  },
+  "max_retries": {
+    "description": "最多请求次数（含首次）",
+    "type": "int",
+    "default": 3,
+    "hint": "默认 3 次，即首次请求加最多 2 次重试。服务忙、连接异常或音频过短时重试，其他 HTTP 错误直接报错。"
+  },
+  "singing": {
+    "description": "歌曲翻唱",
+    "type": "object",
+    "hint": "也可在插件详情的「语音服务」页面统一修改配置并启停服务；当前参考音频将作为目标音色。",
+    "items": {
+      "enabled": {
+        "description": "启用翻唱",
+        "type": "bool",
+        "default": true,
+        "hint": "翻唱需要独立的 Breeze Cover 服务。"
+      },
+      "api_base": {
+        "description": "翻唱服务地址",
+        "type": "string",
+        "default": "http://127.0.0.1:7861",
+        "hint": "Breeze Cover 的 API 地址。"
+      },
+      "timeout": {
+        "description": "翻唱请求超时（秒）",
+        "type": "int",
+        "default": 1800,
+        "hint": "翻唱耗时可能较长；为单项网络操作的超时时间。"
+      }
+    }
+  }
+}

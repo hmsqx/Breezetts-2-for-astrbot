@@ -1,0 +1,10 @@
+name: astrbot_plugin_breeze_tts
+display_name: Breeze TTS 语音回复与歌曲翻唱
+desc: 调用本地 Breeze TTS 与翻唱服务，支持可视化配置、音色设计、音色克隆、语音回复及歌曲翻唱
+version: 1.9.0
+author: Echok
+repo: https://github.com/hmsqx/Breezetts-2-for-astrbot
+astrbot_version: ">=4.29.3,<5"
+support_platforms:
+  - aiocqhttp
+social_link: https://github.com/hmsqx

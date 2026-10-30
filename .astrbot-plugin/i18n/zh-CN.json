@@ -1,0 +1,8 @@
+{
+  "pages": {
+    "service": {
+      "title": "语音服务",
+      "description": "查看并启动 Breeze 普通语音和翻唱服务"
+    }
+  }
+}

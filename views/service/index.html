@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breeze 语音服务与配置</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">BREEZE</p>
+      <h1>语音服务与配置</h1>
+      <p class="intro">查看歌曲任务进度，管理普通语音及翻唱服务，并调整 Bot 的音色与连接设置。</p>
+    </header>
+    <div class="dashboard-layout">
+      <div class="monitor-column">
+    <section id="task-card" class="card task-card" aria-labelledby="task-heading">
+      <div class="card-heading">
+        <div><h2 id="task-heading">歌曲任务</h2><p class="detail">查看收录、整首翻唱或片段翻唱的当前阶段与结果。</p></div>
+        <span id="task-status" class="badge">正在查询</span>
+      </div>
+      <dl class="task-facts">
+        <div><dt>歌曲</dt><dd id="task-name">—</dd></div>
+        <div><dt>任务类型</dt><dd id="task-kind">—</dd></div>
+        <div><dt>当前阶段</dt><dd id="task-stage">正在查询</dd></div>
+        <div><dt>用时</dt><dd id="task-elapsed">—</dd></div>
+      </dl>
+      <div id="task-progress-wrap" class="task-progress-wrap" hidden>
+        <progress id="task-progress" max="1" aria-labelledby="task-heading task-progress-text"></progress>
+        <p id="task-progress-text" class="hint">处理中</p>
+      </div>
+      <p id="task-result" class="task-result">正在查询最近的歌曲任务。</p>
+      <p id="task-error" class="message task-error" hidden></p>
+      <details class="task-management">
+        <summary>管理详情</summary>
+        <p id="task-detail" class="task-detail">暂无额外详情。</p>
+      </details>
+      <p id="task-freshness" class="hint">任务进行时每 3 秒自动刷新，空闲时每 5 秒刷新。</p>
+      <p id="task-refresh-message" class="message task-error" hidden></p>
+      <p id="task-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="actions"><button id="task-refresh" class="secondary" type="button" disabled>刷新任务状态</button></div>
+    </section>
+    <section class="card source-card" aria-labelledby="install-sources-heading">
+      <div class="card-heading">
+        <div><h2 id="install-sources-heading">安装与下载来源</h2><p class="detail">网络不通时可手动换源，普通语音和翻唱共用这组选择。</p></div>
+        <span class="badge">GitHub 源码已内置</span>
+      </div>
+      <fieldset id="install-source-fields" class="source-fields" aria-describedby="install-source-message">
+        <legend class="sr-only">选择本次安装的下载来源</legend>
+        <div class="field"><label for="install-source-python">Python 依赖</label><select id="install-source-python"><option value="auto">自动换源（推荐）</option><option value="tuna">清华镜像</option><option value="aliyun">阿里云镜像</option><option value="official">PyPI 官方</option></select></div>
+        <div class="field"><label for="install-source-cuda">CUDA / PyTorch</label><select id="install-source-cuda"><option value="auto">自动换源（推荐）</option><option value="aliyun">阿里云 CUDA</option><option value="sjtu">上海交大 CUDA</option><option value="official">PyTorch 官方</option></select></div>
+        <div class="field"><label for="install-source-model">模型权重</label><select id="install-source-model"><option value="auto">自动换源（推荐）</option><option value="mirror">HF 国内镜像</option><option value="official">Hugging Face 官方</option></select></div>
+      </fieldset>
+      <div class="source-footer"><p id="install-source-message" class="hint" role="status">手动选择后仅使用所选源；选项记在当前浏览器，只影响后续安装。</p><button id="install-source-reset" class="secondary" type="button">恢复自动</button></div>
+    </section>
+    <div class="service-grid">
+    <section class="card" aria-labelledby="tts-heading">
+      <div class="card-heading">
+        <div><h2 id="tts-heading">普通语音服务</h2><p class="detail">为 Bot 的普通语音回复提供服务。</p></div>
+        <span id="tts-service-status" class="badge" role="status">正在查询</span>
+      </div>
+      <div class="status-row"><span>模型状态</span><strong id="tts-model-status">正在查询</strong></div>
+      <p id="tts-message" class="message" role="status" aria-live="polite"></p>
+      <div class="actions">
+        <button id="tts-install" class="secondary" type="button" disabled>一键安装普通语音</button>
+        <button id="tts-install-cancel" class="secondary" type="button" hidden>停止安装</button>
+        <button id="tts-start" type="button" disabled>启动普通语音服务</button>
+        <button id="tts-stop" class="secondary" type="button" disabled>关闭普通语音服务</button>
+        <button id="tts-refresh" class="secondary" type="button" disabled>刷新状态</button>
+      </div>
+      <div id="tts-install-wrap" class="install-progress" hidden aria-busy="false">
+        <p id="tts-install-stage" class="install-stage" role="status" aria-live="polite"></p>
+        <progress id="tts-install-progress" max="1" aria-label="普通语音当前安装步骤进度"></progress>
+        <p id="tts-install-detail" class="hint"></p>
+        <details id="tts-install-logs"><summary>安装日志与失败原因</summary><pre id="tts-install-log" tabindex="0"></pre></details>
+      </div>
+      <p id="tts-install-hint" class="hint" role="status">安装会补齐配套源码、隔离依赖和模型。首次建议预留16 GiB；先关闭两个服务，完成后点击启动。</p>
+    </section>
+    <section class="card" aria-labelledby="status-heading">
+      <div class="card-heading">
+        <div>
+          <h2 id="status-heading">翻唱服务</h2>
+          <p class="detail">翻唱期间，普通语音服务会暂时暂停，完成后恢复。</p>
+        </div>
+        <span id="service-status" class="badge" role="status">正在查询</span>
+      </div>
+      <div class="status-row">
+        <span>模型状态</span>
+        <strong id="model-status">正在查询</strong>
+      </div>
+      <p id="message" class="message" role="status" aria-live="polite"></p>
+      <div class="actions">
+        <button id="install" class="secondary" type="button" disabled>一键安装翻唱</button>
+        <button id="install-cancel" class="secondary" type="button" hidden>停止安装</button>
+        <button id="start" type="button" disabled>启动翻唱服务</button>
+        <button id="stop" class="secondary" type="button" disabled>关闭翻唱服务</button>
+        <button id="refresh" class="secondary" type="button" disabled>刷新状态</button>
+      </div>
+      <div id="install-wrap" class="install-progress" hidden aria-busy="false">
+        <p id="install-stage" class="install-stage" role="status" aria-live="polite"></p>
+        <progress id="install-progress" max="1" aria-label="翻唱当前安装步骤进度"></progress>
+        <p id="install-detail" class="hint"></p>
+        <details id="install-logs"><summary>安装日志与失败原因</summary><pre id="install-log" tabindex="0"></pre></details>
+      </div>
+      <p id="install-hint" class="hint" role="status">安装会补齐源码、人声分离和声线转换模型，无需Git。首次建议预留12 GiB，不删除歌库或音色配置。</p>
+    </section>
+    </div>
+    <section id="library-card" class="card library-card" aria-labelledby="library-heading">
+      <div class="card-heading">
+        <div><h2 id="library-heading">歌曲库与手动上传</h2><p class="detail">已有歌曲一直保存在本机歌曲库中，不会随临时语音清理而删除。</p></div>
+        <span id="library-count" class="badge">正在读取</span>
+      </div>
+      <p class="hint library-retention">音源和已保存的歌词时间轴可长期保留，之后可让 Bot 使用当前音色翻唱。</p>
+      <p id="library-empty" class="message">正在读取歌曲库。</p>
+      <ul id="library-list" class="song-list" aria-label="已永久保存的歌曲" tabindex="0"></ul>
+      <div id="library-delete-confirm" class="delete-confirm" role="group" aria-labelledby="library-delete-heading library-delete-name" hidden>
+        <h3 id="library-delete-heading">确认删除原音源</h3>
+        <p id="library-delete-name" class="delete-song-name"></p>
+        <p class="hint">将删除这首歌曲的原始音源和对应时间轴缓存，其他歌曲不受影响。删除后需重新收录才能翻唱。</p>
+        <div class="actions">
+          <button id="library-delete-submit" class="danger" type="button">确认删除音源</button>
+          <button id="library-delete-cancel" class="secondary" type="button">取消</button>
+        </div>
+      </div>
+      <p id="library-message" class="message" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="actions"><button id="library-refresh" class="secondary" type="button" disabled>刷新歌曲库</button></div>
+      <form id="library-upload-form" class="library-upload-form">
+        <fieldset id="library-upload-fields" class="config-fields" disabled>
+          <legend>手动上传音频</legend>
+          <div class="field">
+            <label for="library-upload-name">歌曲名称</label>
+            <input id="library-upload-name" name="name" type="text" required maxlength="160" aria-describedby="upload-name-hint">
+            <p id="upload-name-hint" class="hint">1–160 个字。歌曲名称相同会拒绝收录，不会覆盖旧歌。</p>
+          </div>
+          <div class="field">
+            <label for="library-upload-file">音频文件</label>
+            <input id="library-upload-file" name="file" type="file" required accept=".wav,.mp3,.m4a,.flac,.ogg,.opus,.aac,.webm,.mp4" aria-describedby="upload-file-hint">
+            <p id="upload-file-hint" class="hint">支持 WAV、MP3、M4A、FLAC、OGG、OPUS、AAC，以及 WEBM/MP4 中的音轨。文件不超过 120 MiB，音频最长 10 分钟。</p>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="library-upload-artist">歌手（可选）</label>
+              <input id="library-upload-artist" name="artist" type="text" maxlength="160" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="library-upload-language">歌曲语言</label>
+              <select id="library-upload-language" name="language">
+                <option value="">自动识别</option>
+                <option value="zh">中文</option>
+                <option value="en">英文</option>
+                <option value="ja">日文</option>
+                <option value="ko">韩文</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+        <div id="library-upload-progress-wrap" class="upload-progress-wrap" hidden>
+          <progress id="library-upload-progress" max="1" aria-label="正在上传，进度百分比未知"></progress>
+          <p class="hint">正在上传处理中，当前暂无可测百分比。</p>
+        </div>
+        <p id="library-upload-message" class="message" role="status" aria-live="polite" aria-atomic="true">手动上传会永久保存音源，不会训练模型权重。</p>
+        <div class="actions"><button id="library-upload-submit" type="submit" disabled>上传并永久收录</button></div>
+      </form>
+    </section>
+      </div>
+    <section class="card config-card" aria-labelledby="config-heading">
+      <div class="card-heading">
+        <div><h2 id="config-heading">插件配置</h2><p class="detail">修改后点击保存。服务启动与关闭由上方按钮控制。</p></div>
+        <span id="config-state" class="badge" role="status" aria-live="polite">正在读取</span>
+      </div>
+      <form id="config-form">
+        <fieldset id="config-fields" class="config-fields" disabled>
+          <legend class="sr-only">Breeze 插件全部配置</legend>
+          <div class="config-grid">
+          <fieldset class="config-group voice-group">
+            <legend>音色与克隆</legend>
+            <div class="voice-fields">
+            <div class="field">
+              <label for="config-instruction">音色描述</label>
+              <textarea id="config-instruction" name="instruction" rows="3" aria-describedby="instruction-hint"></textarea>
+              <p id="instruction-hint" class="hint">描述声音、语气和语速；留空则不发送描述。克隆时须开启下方语音引导才会使用。</p>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="config-cfg-scale">CFG 强度</label>
+                <input id="config-cfg-scale" name="cfg_scale" type="number" min="1" max="10" step="0.1" required aria-describedby="cfg-hint">
+                <p id="cfg-hint" class="hint">1–10，越高越遵循描述。纯克隆或无描述时实际使用 1。</p>
+              </div>
+              <div class="field">
+                <label for="config-seed">随机种子</label>
+                <input id="config-seed" name="seed" type="number" min="0" max="4294967295" step="1" required aria-describedby="seed-hint">
+                <p id="seed-hint" class="hint">0–4294967295 的整数。相同种子可减少随机波动，音色仍可能变化。</p>
+              </div>
+            </div>
+            <div class="field">
+              <label for="config-ref-audio-path">参考音频路径</label>
+              <input id="config-ref-audio-path" name="ref_audio_path" type="text" placeholder="D:/Echok/sample.wav" spellcheck="false" aria-describedby="ref-path-hint">
+              <p id="ref-path-hint" class="hint">填写 AstrBot 所在机器可读取的 WAV 绝对路径；这里不上传文件。留空表示不用克隆，并请清空下方原文。翻唱沿用此音色。</p>
+            </div>
+            <div class="field">
+              <label for="config-ref-text">参考音频原文</label>
+              <textarea id="config-ref-text" name="ref_text" rows="3" aria-describedby="ref-text-hint"></textarea>
+              <p id="ref-text-hint" class="hint">克隆时填写参考音频中实际说出的原文；不用克隆时留空。</p>
+            </div>
+            <div class="field">
+              <label class="check-label" for="config-clone-use-instruction"><input id="config-clone-use-instruction" name="clone_use_instruction" type="checkbox" aria-describedby="clone-hint"><span>克隆时使用语音引导</span></label>
+              <p id="clone-hint" class="hint">开启后使用非空音色描述及 CFG 强度，引导语气和语速；关闭时进行纯克隆。</p>
+            </div>
+            </div>
+          </fieldset>
+          <fieldset class="config-group">
+            <legend>普通语音</legend>
+            <div class="field">
+              <label for="config-api-base">Breeze TTS 服务地址</label>
+              <input id="config-api-base" name="api_base" type="url" required placeholder="http://127.0.0.1:7860" spellcheck="false" aria-describedby="tts-api-hint">
+              <p id="tts-api-hint" class="hint">填写 HTTP 或 HTTPS API 地址，默认 http://127.0.0.1:7860。</p>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="config-timeout">操作超时（秒）</label>
+                <input id="config-timeout" name="timeout" type="number" min="1" step="1" required aria-describedby="timeout-hint">
+                <p id="timeout-hint" class="hint">默认 120 秒，针对连接、读取等单项操作。</p>
+              </div>
+              <div class="field">
+                <label for="config-max-retries">最多请求次数</label>
+                <input id="config-max-retries" name="max_retries" type="number" min="1" step="1" required aria-describedby="retries-hint">
+                <p id="retries-hint" class="hint">包含首次请求，默认 3 次，即首次加最多 2 次重试。</p>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="config-group">
+            <legend>歌曲翻唱</legend>
+            <div class="field">
+              <label class="check-label" for="config-singing-enabled"><input id="config-singing-enabled" name="singing.enabled" type="checkbox" aria-describedby="singing-enabled-hint"><span>启用翻唱</span></label>
+              <p id="singing-enabled-hint" class="hint">关闭此开关会停用翻唱功能。若要释放资源，请使用上方的关闭服务按钮。</p>
+            </div>
+            <div class="field">
+              <label for="config-singing-api-base">翻唱服务地址</label>
+              <input id="config-singing-api-base" name="singing.api_base" type="url" required placeholder="http://127.0.0.1:7861" spellcheck="false" aria-describedby="singing-api-hint">
+              <p id="singing-api-hint" class="hint">Breeze Cover 的 HTTP 或 HTTPS API 地址。</p>
+            </div>
+            <div class="field">
+              <label for="config-singing-timeout">翻唱操作超时（秒）</label>
+              <input id="config-singing-timeout" name="singing.timeout" type="number" min="1" step="1" required aria-describedby="singing-timeout-hint">
+              <p id="singing-timeout-hint" class="hint">默认 1800 秒，翻唱耗时可能较长；此值针对单项网络操作。</p>
+            </div>
+          </fieldset>
+          </div>
+        </fieldset>
+        <p id="config-message" class="message" role="status" aria-live="polite" aria-atomic="true">正在读取已保存的配置。</p>
+        <div id="config-discard-confirm" class="discard-confirm" role="group" aria-labelledby="discard-heading" hidden>
+          <p id="discard-heading">当前有未保存的修改，重新读取会替换这些输入。</p>
+          <div class="actions">
+            <button id="config-confirm-reload" type="button">放弃修改并重新读取</button>
+            <button id="config-cancel-reload" class="secondary" type="button">继续编辑</button>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="config-save" type="submit" disabled>保存配置</button>
+          <button id="config-reload" class="secondary" type="button">重新读取</button>
+        </div>
+      </form>
+    </section>
+    </div>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
